@@ -1,0 +1,27 @@
+From f384974f94707fc0436771d9001efa113073980b Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:23:11 +0200
+Subject: [PATCH] Hide the overview switcher component in projects (simpler UI)
+
+---
+ app/Template/project_header/views.php | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/app/Template/project_header/views.php b/app/Template/project_header/views.php
+index e6e7a99..a0f2b59 100644
+--- a/app/Template/project_header/views.php
++++ b/app/Template/project_header/views.php
+@@ -2,10 +2,6 @@
+     
+     <?= $this->hook->render('template:project-header:view-switcher-before-project-overview', array('project' => $project, 'filters' => $filters)) ?>
+ 
+-    <li <?= $this->app->checkMenuSelection('ProjectOverviewController') ?>>
+-        <?= $this->url->icon('eye', t('Overview'), 'ProjectOverviewController', 'show', array('project_id' => $project['id'], 'search' => $filters['search']), false, 'view-overview', t('Keyboard shortcut: "%s"', 'v o')) ?>
+-    </li>
+-
+     <?= $this->hook->render('template:project-header:view-switcher-before-board-view', array('project' => $project, 'filters' => $filters)) ?>
+ 
+     <li <?= $this->app->checkMenuSelection('BoardViewController') ?>>
+-- 
+2.43.0
+

@@ -1,0 +1,25 @@
+From d7144a695795aaa6b3782c807497e98dbbe2c0e2 Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:20:57 +0200
+Subject: [PATCH] Hide icons in modal links if parameter is empty
+
+---
+ app/Helper/ModalHelper.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/Helper/ModalHelper.php b/app/Helper/ModalHelper.php
+index b528f4a..973bae8 100644
+--- a/app/Helper/ModalHelper.php
++++ b/app/Helper/ModalHelper.php
+@@ -43,7 +43,7 @@ class ModalHelper extends Base
+ 
+     public function large($icon, $label, $controller, $action, array $params = array())
+     {
+-        $html = '<i class="fa fa-'.$icon.' fa-fw js-modal-large" aria-hidden="true"></i>'.$label;
++        $html = $icon !== '' ? '<i class="fa fa-'.$icon.' fa-fw js-modal-large" aria-hidden="true"></i>'.$label : $label;
+         return $this->helper->url->link($html, $controller, $action, $params, false, 'js-modal-large');
+     }
+ 
+-- 
+2.43.0
+

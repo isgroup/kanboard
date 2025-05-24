@@ -1,0 +1,428 @@
+From 32024c7ad4d9512c37cee6817e2ee85b9cb7d11f Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:29:04 +0200
+Subject: [PATCH] Simplify and use modern CSS in board tasks (simpler UI)
+
+---
+ app/Template/board/table_column.php | 106 +--------------------
+ app/Template/board/task_avatar.php  |   2 -
+ app/Template/board/task_footer.php  | 139 ----------------------------
+ app/Template/board/task_private.php |  51 +++++-----
+ app/Template/board/task_public.php  |  27 +++++-
+ 5 files changed, 50 insertions(+), 275 deletions(-)
+
+diff --git a/app/Template/board/table_column.php b/app/Template/board/table_column.php
+index cc295b9..bc6f909 100644
+--- a/app/Template/board/table_column.php
++++ b/app/Template/board/table_column.php
+@@ -5,14 +5,6 @@
+ <tr class="board-swimlane-columns-<?= $swimlane['id'] ?>">
+     <?php foreach ($swimlane['columns'] as $column): ?>
+     <th class="board-column-header board-column-header-<?= $column['id'] ?>" data-column-id="<?= $column['id'] ?>">
+-
+-        <!-- column in collapsed mode -->
+-        <div class="board-column-collapsed">
+-            <small class="board-column-header-task-count" title="<?= t('Task count') ?>">
+-                <span id="task-number-column-<?= $column['id'] ?>"><span class="ui-helper-hidden-accessible"><?= t('Task count') ?> </span><?= $column['nb_tasks'] ?></span>
+-            </small>
+-        </div>
+-
+         <!-- column in expanded mode -->
+         <div class="board-column-expanded board-column-expanded-header">
+             <?php if (! $not_editable && $this->projectRole->canCreateTaskInColumn($column['project_id'], $column['id'])): ?>
+@@ -20,103 +12,7 @@
+             <?php endif ?>
+ 
+             <span class="board-column-title">
+-                <?php if ($not_editable): ?>
+-                    <?= $this->text->e($column['title']) ?>
+-                <?php else: ?>
+-                    <span class="dropdown">
+-                        <a href="#" class="dropdown-menu"><?= $this->text->e($column['title']) ?> <i class="fa fa-caret-down"></i></a>
+-                        <ul>
+-                            <li>
+-                                <i class="fa fa-minus-square fa-fw"></i>
+-                                <a href="#" class="board-toggle-column-view" data-column-id="<?= $column['id'] ?>"><?= t('Hide this column') ?></a>
+-                            </li>
+-                            <?php if ($this->projectRole->canCreateTaskInColumn($column['project_id'], $column['id'])): ?>
+-                                <li>
+-                                    <?= $this->modal->medium('align-justify', t('Create tasks in bulk'), 'TaskBulkController', 'show', array('project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id'])) ?>
+-                                </li>
+-                            <?php endif ?>
+-
+-                            <?php if ($column['nb_tasks'] > 0 && $this->projectRole->canChangeTaskStatusInColumn($column['project_id'], $column['id'])): ?>
+-                                <li>
+-                                    <?= $this->modal->confirm('close', t('Close all tasks in this column and this swimlane'), 'BoardPopoverController', 'confirmCloseColumnTasks', array('project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id'])) ?>
+-                                </li>
+-                            <?php endif ?>
+-                        </ul>
+-                        <?php if ($column['nb_tasks'] > 0 && $this->user->hasProjectAccess('TaskModificationController', 'update', $column['project_id'])): ?>
+-                            <span class="dropdown">
+-                                <a href="#" class="dropdown-menu"><i class="fa fa-sort"></i></i></a>
+-                                <ul>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-numeric-asc', t('Reorder this column by id (ASC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'id', 'direction' => 'asc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-numeric-desc', t('Reorder this column by id (DESC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'id', 'direction' => 'desc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-numeric-asc', t('Reorder this column by priority (ASC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'priority', 'direction' => 'asc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-numeric-desc', t('Reorder this column by priority (DESC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'priority', 'direction' => 'desc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-amount-asc', t('Reorder this column by assignee and priority (ASC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'assignee-priority', 'direction' => 'asc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-amount-desc', t('Reorder this column by assignee and priority (DESC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'assignee-priority', 'direction' => 'desc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-alpha-asc', t('Reorder this column by assignee (A-Z)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'assignee', 'direction' => 'asc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-alpha-desc', t('Reorder this column by assignee (Z-A)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'assignee', 'direction' => 'desc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-numeric-asc', t('Reorder this column by due date (ASC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'due-date', 'direction' => 'asc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                    <li>
+-                                        <?= $this->url->icon('sort-numeric-desc', t('Reorder this column by due date (DESC)'), 'TaskReorderController', 'reorderColumn', ['sort' => 'due-date', 'direction' => 'desc', 'project_id' => $column['project_id'], 'column_id' => $column['id'], 'swimlane_id' => $swimlane['id']]) ?>
+-                                    </li>
+-                                </ul>
+-                            </span>
+-                        <?php endif ?>
+-
+-                        <?= $this->hook->render('template:board:column:dropdown', array('swimlane' => $swimlane, 'column' => $column)) ?>
+-                    </span>
+-                <?php endif ?>
+-            </span>
+-
+-            <span class="pull-right board-column-header-task-count">
+-                <?php if (! empty($column['score'])): ?>
+-                    <span title="<?= t('Score') ?>">
+-                        <span class="ui-helper-hidden-accessible"><?= t('Score') ?> </span><?= $column['score'] ?>
+-                    </span>
+-                <?php endif ?>
+-
+-                <?php if ($swimlane['nb_swimlanes'] > 1 && ! empty($column['cumulative_score_across_swimlane'])): ?>
+-                    <span title="<?= t('Total score in this column across all swimlanes') ?>">
+-                        (<span><span class="ui-helper-hidden-accessible"><?= t('Total score in this column across all swimlanes') ?> </span><?= $column['cumulative_score_across_swimlane'] ?></span>)&nbsp;
+-                    </span>
+-                <?php endif ?>
+-
+-                <?php if (! $not_editable && ! empty($column['description'])): ?>
+-                    <?= $this->app->tooltipMarkdown($column['description']) ?>&nbsp;
+-                <?php endif ?>
+-
+-                <?php if (! empty($column['nb_tasks'])): ?>
+-                <span title="<?= t('Number of visible tasks in this column and swimlane') ?>">
+-                    <span><span class="ui-helper-hidden-accessible"><?= t('Task count') ?> </span><?= $column['nb_tasks'] ?></span>&nbsp;
+-                </span>
+-                <?php endif ?>
+-
+-                <?php if (! empty($column['nb_unfiltered_tasks_across_swimlane'])): ?>
+-                <span title="<?= t('Total number of tasks in this column across all swimlanes') ?>">
+-                    <?php if ($column['task_limit'] > 0): ?>
+-                        (<span><span class="ui-helper-hidden-accessible"><?= t('Total number of tasks in this column across all swimlanes') ?> </span><?= $column['nb_unfiltered_tasks_across_swimlane'] ?></span>/<span title="<?= t('Task limit') ?>"><span class="ui-helper-hidden-accessible"><?= t('Task limit') ?> </span><?= $this->text->e($column['task_limit']) ?></span>)
+-                    <?php else: ?>
+-                        (<span><span class="ui-helper-hidden-accessible"><?= t('Total number of tasks in this column across all swimlanes') ?> </span><?= $column['nb_unfiltered_tasks_across_swimlane'] ?></span>)
+-                    <?php endif ?>
+-                </span>
+-                <?php endif ?>
++                <?= $this->text->e($column['title']) ?>
+             </span>
+             <?= $this->hook->render('template:board:column:header', array('swimlane' => $swimlane, 'column' => $column)) ?>
+         </div>
+diff --git a/app/Template/board/task_avatar.php b/app/Template/board/task_avatar.php
+index 14dd239..468c615 100644
+--- a/app/Template/board/task_avatar.php
++++ b/app/Template/board/task_avatar.php
+@@ -1,5 +1,4 @@
+ <?php if (! empty($task['owner_id'])): ?>
+-<div class="task-board-avatars">
+     <span
+         <?php if ($this->user->hasProjectAccess('TaskModificationController', 'edit', $task['project_id'])): ?>
+         class="task-board-assignee task-board-change-assignee"
+@@ -16,5 +15,4 @@
+             'avatar-inline'
+         ) ?>
+     </span>
+-</div>
+ <?php endif ?>
+diff --git a/app/Template/board/task_footer.php b/app/Template/board/task_footer.php
+index 2cdb3bd..7637dc4 100644
+--- a/app/Template/board/task_footer.php
++++ b/app/Template/board/task_footer.php
+@@ -1,140 +1 @@
+-<?php if (! empty($task['category_id'])): ?>
+-<div class="task-board-category-container task-board-category-container-color">
+-    <span class="task-board-category category-<?= $this->text->e($task['category_name']) ?> <?= $task['category_color_id'] ? "color-{$task['category_color_id']}" : '' ?>">
+-        <?php if ($not_editable): ?>
+-            <?= $this->text->e($task['category_name']) ?>
+-        <?php else: ?>
+-            <?= $this->url->link(
+-                $this->text->e($task['category_name']),
+-                'TaskModificationController',
+-                'edit',
+-                array('task_id' => $task['id']),
+-                false,
+-                'js-modal-large' . (! empty($task['category_description']) ? ' tooltip' : ''),
+-                t('Change category')
+-            ) ?>
+-            <?php if (! empty($task['category_description'])): ?>
+-                <?= $this->app->tooltipMarkdown($task['category_description']) ?>
+-            <?php endif ?>
+-        <?php endif ?>
+-    </span>
+-</div>
+-<?php endif ?>
+-
+-<?php if (! empty($task['tags'])): ?>
+-    <div class="task-tags">
+-        <ul>
+-        <?php foreach ($task['tags'] as $tag): ?>
+-            <li class="task-tag <?= $tag['color_id'] ? "color-{$tag['color_id']}" : '' ?>"><?= $this->text->e($tag['name']) ?></li>
+-        <?php endforeach ?>
+-        </ul>
+-    </div>
+-<?php endif ?>
+-
+-<div class="task-board-icons">
+-    <div class="task-board-icons-row">
+-        <?php if ($task['reference']): ?>
+-            <span class="task-board-reference" title="<?= t('Reference') ?>">
+-                <span class="ui-helper-hidden-accessible"><?= t('Reference') ?> </span><?= $this->task->renderReference($task) ?>
+-            </span>
+-        <?php endif ?>
+-    </div>
+-    <div class="task-board-icons-row">
+-        <?php if ($task['is_milestone'] == 1): ?>
+-            <span title="<?= t('Milestone') ?>">
+-                <i class="fa fa-flag flag-milestone" role="img" aria-label="<?= t('Milestone') ?>"></i>
+-            </span>
+-        <?php endif ?>
+-
+-        <?php if ($task['score']): ?>
+-            <span class="task-score" title="<?= t('Complexity') ?>">
+-                <i class="fa fa-trophy" role="img" aria-label="<?= t('Complexity') ?>"></i>
+-                <?= $this->text->e($task['score']) ?>
+-            </span>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['time_estimated']) || ! empty($task['time_spent'])): ?>
+-            <span class="task-time-estimated" title="<?= t('Time spent and estimated') ?>">
+-                <span class="ui-helper-hidden-accessible"><?= t('Time spent and estimated') ?> </span><?= $this->text->e($task['time_spent']) ?>/<?= $this->text->e($task['time_estimated']) ?>h
+-            </span>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['date_due'])): ?>
+-            <span class="task-date
+-                <?php if (time() > $task['date_due']): ?>
+-                     task-date-overdue
+-                <?php elseif (date('Y-m-d') == date('Y-m-d', $task['date_due'])): ?>
+-                     task-date-today
+-                <?php endif ?>
+-                ">
+-                <i class="fa fa-calendar"></i>
+-                <?php if (date('Hi', $task['date_due']) === '0000' ): ?>
+-                    <?= $this->dt->date($task['date_due']) ?>
+-                <?php else: ?>
+-                    <?= $this->dt->datetime($task['date_due']) ?>
+-                <?php endif ?>
+-            </span>
+-        <?php endif ?>
+-    </div>
+-    <div class="task-board-icons-row">
+-
+-        <?php if ($task['recurrence_status'] == \Kanboard\Model\TaskModel::RECURRING_STATUS_PENDING): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-refresh fa-rotate-90"></i>', $this->url->href('BoardTooltipController', 'recurrence', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if ($task['recurrence_status'] == \Kanboard\Model\TaskModel::RECURRING_STATUS_PROCESSED): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-refresh fa-rotate-90 fa-inverse"></i>', $this->url->href('BoardTooltipController', 'recurrence', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['nb_links'])): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-code-fork fa-fw"></i>'.$task['nb_links'], $this->url->href('BoardTooltipController', 'tasklinks', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['nb_external_links'])): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-external-link fa-fw"></i>'.$task['nb_external_links'], $this->url->href('BoardTooltipController', 'externallinks', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['nb_subtasks'])): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-bars fa-fw"></i>'.round($task['nb_completed_subtasks'] / $task['nb_subtasks'] * 100, 0).'%', $this->url->href('BoardTooltipController', 'subtasks', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['nb_files'])): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-paperclip fa-fw"></i>'.$task['nb_files'], $this->url->href('BoardTooltipController', 'attachments', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if ($task['nb_comments'] > 0): ?>
+-            <?php if ($not_editable): ?>
+-                <?php $aria_label = $task['nb_comments'] == 1 ? t('%d comment', $task['nb_comments']) : t('%d comments', $task['nb_comments']); ?>
+-                <span title="<?= $aria_label ?>" role="img" aria-label="<?= $aria_label ?>"><i class="fa fa-comments-o"></i>&nbsp;<?= $task['nb_comments'] ?></span>
+-            <?php else: ?>
+-                <?= $this->modal->medium(
+-                    'comments-o',
+-                    $task['nb_comments'],
+-                    'CommentListController',
+-                    'show',
+-                    array('task_id' => $task['id']),
+-                    $task['nb_comments'] == 1 ? t('%d comment', $task['nb_comments']) : t('%d comments', $task['nb_comments'])
+-                ) ?>
+-            <?php endif ?>
+-        <?php endif ?>
+-
+-        <?php if (! empty($task['description'])): ?>
+-            <?= $this->app->tooltipLink('<i class="fa fa-file-text-o"></i>', $this->url->href('BoardTooltipController', 'description', array('task_id' => $task['id']))) ?>
+-        <?php endif ?>
+-
+-        <?php if ($task['is_active'] == 1): ?>
+-            <div class="task-icon-age">
+-                <span title="<?= t('Task age in days')?>" class="task-icon-age-total"><span class="ui-helper-hidden-accessible"><?= t('Task age in days') ?> </span><?= $this->dt->age($task['date_creation']) ?></span>
+-                <span title="<?= t('Days in this column')?>" class="task-icon-age-column"><span class="ui-helper-hidden-accessible"><?= t('Days in this column') ?> </span><?= $this->dt->age($task['date_moved']) ?></span>
+-            </div>
+-        <?php else: ?>
+-            <span class="task-board-closed"><i class="fa fa-ban fa-fw"></i><?= t('Closed') ?></span>
+-        <?php endif ?>
+-
+-        <?= $this->task->renderPriority($task['priority']) ?>
+-
+-        <?= $this->hook->render('template:board:task:icons', array('task' => $task)) ?>
+-    </div>
+-</div>
+-
+ <?= $this->hook->render('template:board:task:footer', array('task' => $task)) ?>
+diff --git a/app/Template/board/task_private.php b/app/Template/board/task_private.php
+index 276a407..227a949 100644
+--- a/app/Template/board/task_private.php
++++ b/app/Template/board/task_private.php
+@@ -3,6 +3,7 @@
+         <?= $task['is_draggable'] ? 'draggable-item ' : '' ?>
+         <?= $task['is_active'] == 1 ? 'task-board-status-open '.($task['date_modification'] > (time() - $board_highlight_period) ? 'task-board-recent' : '') : 'task-board-status-closed' ?>
+         color-<?= $task['color_id'] ?>"
++     style="padding: 8px 8px 6px 8px;"
+      data-task-id="<?= $task['id'] ?>"
+      data-column-id="<?= $task['column_id'] ?>"
+      data-swimlane-id="<?= $task['swimlane_id'] ?>"
+@@ -17,15 +18,6 @@
+     <?php if ($this->board->isCollapsed($task['project_id'])): ?>
+         <div class="task-board-collapsed">
+             <div class="task-board-saving-icon" style="display: none;"><i class="fa fa-spinner fa-pulse"></i></div>
+-            <?php if ($this->user->hasProjectAccess('TaskModificationController', 'edit', $task['project_id'])): ?>
+-                <?= $this->render('task/dropdown', array('task' => $task, 'redirect' => 'board')) ?>
+-                <?php if ($this->projectRole->canUpdateTask($task)): ?>
+-                    <?= $this->modal->large('edit', '', 'TaskModificationController', 'edit', array('task_id' => $task['id'])) ?>
+-                <?php endif ?>
+-            <?php else: ?>
+-                <strong><?= '#'.$task['id'] ?></strong>
+-            <?php endif ?>
+-
+             <?php if (! empty($task['assignee_username'])): ?>
+                 <span title="<?= $this->text->e($task['assignee_name'] ?: $task['assignee_username']) ?>">
+                     <?= $this->text->e($this->user->getInitials($task['assignee_name'] ?: $task['assignee_username'])) ?>
+@@ -36,31 +28,40 @@
+     <?php else: ?>
+         <div class="task-board-expanded">
+             <div class="task-board-saving-icon" style="display: none;"><i class="fa fa-spinner fa-pulse fa-2x"></i></div>
+-            <div class="task-board-header">
++            <div class="task-board-header" style="display: flex; align-items: center;">
+                 <?php if ($this->user->hasProjectAccess('TaskModificationController', 'edit', $task['project_id'])): ?>
+-                    <?= $this->render('task/dropdown', array('task' => $task, 'redirect' => 'board')) ?>
+                     <?php if ($this->projectRole->canUpdateTask($task)): ?>
+-                        <?= $this->modal->large('edit', '', 'TaskModificationController', 'edit', array('task_id' => $task['id'])) ?>
++                        <?= $this->hook->render('template:board:private:task:before-title', array('task' => $task)) ?>
++                        <?= $this->modal->large('', $this->text->e($task['title']), 'TaskModificationController', 'edit', array('task_id' => $task['id'])) ?>
++                        <?= $this->hook->render('template:board:private:task:after-title', array('task' => $task)) ?>
+                     <?php endif ?>
+                 <?php else: ?>
+                     <strong><?= '#'.$task['id'] ?></strong>
++                    <?= $this->url->link($this->text->e($task['title']), 'TaskViewController', 'show', array('task_id' => $task['id'])) ?>
+                 <?php endif ?>
+-
+-                <?php if (! empty($task['owner_id'])): ?>
+-                    <span class="task-board-assignee">
+-                        <?= $this->text->e($task['assignee_name'] ?: $task['assignee_username']) ?>
+-                    </span>
+-                <?php endif ?>
+-
+-                <?= $this->render('board/task_avatar', array('task' => $task)) ?>
+             </div>
+ 
+-            <?= $this->hook->render('template:board:private:task:before-title', array('task' => $task)) ?>
+-            <div class="task-board-title">
+-                <?= $this->url->link($this->text->e($task['title']), 'TaskViewController', 'show', array('task_id' => $task['id'])) ?>
++            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px;">
++                <div style="flex: 0 0 auto;">
++                    <?= $this->render('board/task_avatar', array('task' => $task)) ?>
++                </div>
++                
++                <div style="flex: 0 0 auto;">
++                    <?php if (! empty($task['date_due'])): ?>
++                        <span class="task-date
++                            <?php if (time() > $task['date_due']): ?>
++                                 task-date-overdue
++                            <?php elseif (date('Y-m-d') == date('Y-m-d', $task['date_due'])): ?>
++                                 task-date-today
++                            <?php endif ?>
++                            " style="font-size: 0.8em;">
++                            <i class="fa fa-calendar"></i>
++                            <?= explode(" ", $this->dt->datetime($task['date_due']))[0] ?>
++                        </span>
++                    <?php endif ?>
++                </div>
+             </div>
+-            <?= $this->hook->render('template:board:private:task:after-title', array('task' => $task)) ?>
+-
++            
+             <?= $this->render('board/task_footer', array(
+                 'task' => $task,
+                 'not_editable' => $not_editable,
+diff --git a/app/Template/board/task_public.php b/app/Template/board/task_public.php
+index 8e429ea..f59ac9e 100644
+--- a/app/Template/board/task_public.php
++++ b/app/Template/board/task_public.php
+@@ -1,5 +1,26 @@
+-<div class="task-board color-<?= $task['color_id'] ?> <?= $task['date_modification'] > time() - $board_highlight_period ? 'task-board-recent' : '' ?>">
+-    <div class="task-board-header">
++<div class="task-board color-<?= $task['color_id'] ?> <?= $task['date_modification'] > time() - $board_highlight_period ? 'task-board-recent' : '' ?>" style="padding: 8px;">
++    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
++        <div style="flex: 0 0 auto;">
++            <?= $this->render('board/task_avatar', array('task' => $task)) ?>
++        </div>
++        
++        <div style="flex: 0 0 auto;">
++            <?php if (! empty($task['date_due'])): ?>
++                <span class="task-date
++                    <?php if (time() > $task['date_due']): ?>
++                         task-date-overdue
++                    <?php elseif (date('Y-m-d') == date('Y-m-d', $task['date_due'])): ?>
++                         task-date-today
++                    <?php endif ?>
++                    " style="font-size: 0.8em;">
++                    <i class="fa fa-calendar"></i>
++                    <?= explode(" ", $this->dt->datetime($task['date_due']))[0] ?>
++                </span>
++            <?php endif ?>
++        </div>
++    </div>
++    
++    <div class="task-board-header" style="display: flex; align-items: center;">
+         <?= $this->url->link('#'.$task['id'], 'TaskViewController', 'readonly', array('task_id' => $task['id'], 'token' => $project['token'])) ?>
+ 
+         <?php if (! empty($task['owner_id'])): ?>
+@@ -7,8 +28,6 @@
+                 <?= $this->text->e($task['assignee_name'] ?: $task['assignee_username']) ?>
+             </span>
+         <?php endif ?>
+-
+-        <?= $this->render('board/task_avatar', array('task' => $task)) ?>
+     </div>
+ 
+     <?= $this->hook->render('template:board:public:task:before-title', array('task' => $task)) ?>
+-- 
+2.43.0
+

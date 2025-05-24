@@ -1,0 +1,25 @@
+From e945e28a4819c49e1f85ed54b777285dc8924ec8 Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:20:06 +0200
+Subject: [PATCH] Always order tasks in the board by their start date
+
+---
+ app/Formatter/BoardFormatter.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/Formatter/BoardFormatter.php b/app/Formatter/BoardFormatter.php
+index 53b149e..193f804 100644
+--- a/app/Formatter/BoardFormatter.php
++++ b/app/Formatter/BoardFormatter.php
+@@ -63,7 +63,7 @@ class BoardFormatter extends BaseFormatter implements FormatterInterface
+ 
+         $tasks = $this->query
+             ->eq(TaskModel::TABLE.'.project_id', $this->projectId)
+-            ->asc(TaskModel::TABLE.'.position')
++            ->asc(TaskModel::TABLE.'.date_started')
+             ->findAll();
+ 
+         $task_ids = array_column($tasks, 'id');
+-- 
+2.43.0
+

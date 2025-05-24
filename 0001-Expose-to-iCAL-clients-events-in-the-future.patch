@@ -1,0 +1,59 @@
+From 04f634bd8698a2a6bfafc87f1c407d7ca3eaa0d7 Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:18:51 +0200
+Subject: [PATCH] Expose to iCAL clients events in the future
+
+---
+ app/Controller/ICalendarController.php | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/app/Controller/ICalendarController.php b/app/Controller/ICalendarController.php
+index d0af5e7..28b7562 100644
+--- a/app/Controller/ICalendarController.php
++++ b/app/Controller/ICalendarController.php
+@@ -29,7 +29,7 @@ class ICalendarController extends BaseController
+         }
+ 
+         $startRange = strtotime('-2 months');
+-        $endRange = strtotime('+6 months');
++        $endRange = strtotime('+6 years');
+ 
+         $startColumn = $this->configModel->get('calendar_user_tasks', 'date_started');
+ 
+@@ -69,7 +69,8 @@ class ICalendarController extends BaseController
+         }
+ 
+         $startRange = strtotime('-2 months');
+-        $endRange = strtotime('+6 months');
++        // ascii: $endRange = strtotime('+6 months');
++        $endRange = strtotime('+6 years');
+ 
+         $startColumn = $this->configModel->get('calendar_project_tasks', 'date_started');
+ 
+-- 
+2.43.0
+
+From f335d5f84b428ccd8ebcc38dc04077037ecec0aa Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 14:39:10 +0000
+Subject: [PATCH] Update file ICalendarController.php
+
+---
+ app/Controller/ICalendarController.php | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/app/Controller/ICalendarController.php b/app/Controller/ICalendarController.php
+index 28b7562..58476a0 100644
+--- a/app/Controller/ICalendarController.php
++++ b/app/Controller/ICalendarController.php
+@@ -69,7 +69,6 @@ class ICalendarController extends BaseController
+         }
+ 
+         $startRange = strtotime('-2 months');
+-        // ascii: $endRange = strtotime('+6 months');
+         $endRange = strtotime('+6 years');
+ 
+         $startColumn = $this->configModel->get('calendar_project_tasks', 'date_started');
+-- 
+2.43.0
+

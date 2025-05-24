@@ -1,0 +1,39 @@
+From a3004193bdaa57210d61987baafa838006c10bfe Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:21:36 +0200
+Subject: [PATCH] Hide creation dropdown (simpler UI)
+
+---
+ app/Template/header/creation_dropdown.php | 22 +---------------------
+ 1 file changed, 1 insertion(+), 21 deletions(-)
+
+diff --git a/app/Template/header/creation_dropdown.php b/app/Template/header/creation_dropdown.php
+index 8d2a51a..81bdd18 100644
+--- a/app/Template/header/creation_dropdown.php
++++ b/app/Template/header/creation_dropdown.php
+@@ -1,21 +1 @@
+-<?php $has_project_creation_access = $this->user->hasAccess('ProjectCreationController', 'create'); ?>
+-<?php $is_private_project_enabled = $this->app->config('disable_private_project', 0) == 0; ?>
+-
+-<?php if ($has_project_creation_access || (!$has_project_creation_access && $is_private_project_enabled)): ?>
+-    <div class="dropdown header-creation-menu">
+-        <a href="#" class="dropdown-menu dropdown-menu-link-icon"><i class="fa fa-plus fa-fw"></i><i class="fa fa-caret-down"></i></a>
+-        <ul>
+-            <?php if ($has_project_creation_access): ?>
+-                <li>
+-                    <?= $this->modal->medium('plus', t('New project'), 'ProjectCreationController', 'create') ?>
+-                </li>
+-            <?php endif ?>
+-            <?php if ($is_private_project_enabled): ?>
+-                <li>
+-                    <?= $this->modal->medium('lock', t('New personal project'), 'ProjectCreationController', 'createPrivate') ?>
+-                </li>
+-            <?php endif ?>
+-            <?= $this->hook->render('template:header:creation-dropdown') ?>
+-        </ul>
+-    </div>
+-<?php endif ?>
++<?= $this->hook->render('template:header:creation-dropdown') ?>
+-- 
+2.43.0
+

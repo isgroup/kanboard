@@ -1,0 +1,105 @@
+From 06dfd495e6a264d521761b2af345139a7405feff Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:30:46 +0200
+Subject: [PATCH] ISGroup plugin for fullscreen modals and more
+
+---
+ plugins/ISGroup/Plugin.php | 44 ++++++++++++++++++++++++++++++++++++++
+ plugins/ISGroup/custom.css | 29 +++++++++++++++++++++++++
+ plugins/ISGroup/custom.js  |  0
+ 3 files changed, 73 insertions(+)
+ create mode 100644 plugins/ISGroup/Plugin.php
+ create mode 100644 plugins/ISGroup/custom.css
+ create mode 100644 plugins/ISGroup/custom.js
+
+diff --git a/plugins/ISGroup/Plugin.php b/plugins/ISGroup/Plugin.php
+new file mode 100644
+index 0000000..268a6b2
+--- /dev/null
++++ b/plugins/ISGroup/Plugin.php
+@@ -0,0 +1,44 @@
++<?php
++
++namespace Kanboard\Plugin\ISGroup;
++
++use Kanboard\Core\Plugin\Base;
++
++class Plugin extends Base
++{
++    public function initialize()
++    {
++        $this->hook->on('template:layout:css', array('template' => 'plugins/ISGroup/custom.css'));
++        $this->hook->on('template:layout:js', array('template' => 'plugins/ISGroup/custom.js'));
++    }
++
++    public function getPluginName()
++    {
++        return 'ISGroup';
++    }
++
++    public function getPluginDescription()
++    {
++        return t('ISGroup for Kanboard');
++    }
++
++    public function getPluginAuthor()
++    {
++        return 'Francesco Ongaro';
++    }
++
++    public function getPluginVersion()
++    {
++        return '0.1';
++    }
++
++    public function getPluginHomepage()
++    {
++        return 'https://www.isgroup.it/';
++    }
++
++    public function getCompatibleVersion()
++    {
++        return '>=1.2.13';
++    }
++}
+diff --git a/plugins/ISGroup/custom.css b/plugins/ISGroup/custom.css
+new file mode 100644
+index 0000000..939927a
+--- /dev/null
++++ b/plugins/ISGroup/custom.css
+@@ -0,0 +1,29 @@
++#modal-box {
++	width: calc(100% - 30px) !important;
++	height: calc(100% - 40px);
++}
++
++#modal-close-button {
++	font-size: 3em;
++}
++
++#modal-content {
++	padding: 0 30px 30px 30px;
++}
++
++#file-dropzone, #screenshot-zone {
++	height: 100px;
++}
++
++#file-dropzone-inner, #screenshot-inner {
++	bottom: 40%;
++}
++
++.text-editor .text-editor-preview-area, 
++.text-editor textarea {
++	width: 100%;
++}
++
++.task-form-main-column input[type="text"] {
++	width: calc(100% - 30px);
++}
+diff --git a/plugins/ISGroup/custom.js b/plugins/ISGroup/custom.js
+new file mode 100644
+index 0000000..e69de29
+-- 
+2.43.0
+

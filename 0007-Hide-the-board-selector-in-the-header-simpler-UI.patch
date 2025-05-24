@@ -1,0 +1,28 @@
+From dd227b7df72f08d51aa84a9061d1a4801a86a2a9 Mon Sep 17 00:00:00 2001
+From: Francesco Ongaro <francesco.ongaro@isgroup.it>
+Date: Sat, 24 May 2025 16:24:24 +0200
+Subject: [PATCH] Hide the board selector in the header (simpler UI)
+
+---
+ app/Template/header.php | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/app/Template/header.php b/app/Template/header.php
+index 08523eb..0372f42 100644
+--- a/app/Template/header.php
++++ b/app/Template/header.php
+@@ -15,11 +15,6 @@
+     <div class="title-container">
+         <?= $_title ?>
+     </div>
+-    <div class="board-selector-container">
+-        <?php if (! empty($board_selector)): ?>
+-            <?= $this->render('header/board_selector', array('board_selector' => $board_selector)) ?>
+-        <?php endif ?>
+-    </div>
+     <div class="menus-container">
+         <?= $_top_right_corner ?>
+     </div>
+-- 
+2.43.0
+
