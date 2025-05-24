@@ -29,7 +29,7 @@ class ICalendarController extends BaseController
         }
 
         $startRange = strtotime('-2 months');
-        $endRange = strtotime('+6 months');
+        $endRange = strtotime('+6 years');
 
         $startColumn = $this->configModel->get('calendar_user_tasks', 'date_started');
 
@@ -69,7 +69,7 @@ class ICalendarController extends BaseController
         }
 
         $startRange = strtotime('-2 months');
-        $endRange = strtotime('+6 months');
+        $endRange = strtotime('+6 years');
 
         $startColumn = $this->configModel->get('calendar_project_tasks', 'date_started');
 

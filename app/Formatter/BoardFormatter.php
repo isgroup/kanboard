@@ -63,7 +63,7 @@ class BoardFormatter extends BaseFormatter implements FormatterInterface
 
         $tasks = $this->query
             ->eq(TaskModel::TABLE.'.project_id', $this->projectId)
-            ->asc(TaskModel::TABLE.'.position')
+            ->asc(TaskModel::TABLE.'.date_started')
             ->findAll();
 
         $task_ids = array_column($tasks, 'id');

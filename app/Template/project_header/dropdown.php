@@ -18,20 +18,6 @@
                 <i class="fa fa-arrows-h fa-fw"></i> <a href="#" class="filter-toggle-scrolling" title="<?= t('Keyboard shortcut: "%s"', 'c') ?>"><?= t('Horizontal scrolling') ?></a>
             </span>
         </li>
-        <li>
-            <span class="filter-vert-collapse">
-                <i class="fa fa-arrow-up fa-fw"></i> <a href="#" class="filter-vert-toggle-collapse"><?= t('Collapse vertically') ?></a>
-            </span>
-            <span class="filter-vert-expand" style="display: none">
-                <i class="fa fa-arrow-down fa-fw"></i> <a href="#" class="filter-vert-toggle-collapse"><?= t('Expand vertically') ?></a>
-            </span>
-        </li>
-        <?php endif ?>
-
-        <?php if ($this->user->hasProjectAccess('TaskCreationController', 'show', $project['id'])): ?>
-            <li>
-                <?= $this->modal->large('plus', t('Add a new task'), 'TaskCreationController', 'show', array('project_id' => $project['id'])) ?>
-            </li>
         <?php endif ?>
 
         <li>
@@ -75,9 +61,5 @@
                 <?= $this->url->icon('cog', t('Configure this project'), 'ProjectViewController', 'show', array('project_id' => $project['id'])) ?>
             </li>
         <?php endif ?>
-
-        <li>
-            <?= $this->url->icon('folder', t('Manage projects'), 'ProjectListController', 'show') ?>
-        </li>
     </ul>
 </div>

@@ -2,10 +2,6 @@
     
     <?= $this->hook->render('template:project-header:view-switcher-before-project-overview', array('project' => $project, 'filters' => $filters)) ?>
 
-    <li <?= $this->app->checkMenuSelection('ProjectOverviewController') ?>>
-        <?= $this->url->icon('eye', t('Overview'), 'ProjectOverviewController', 'show', array('project_id' => $project['id'], 'search' => $filters['search']), false, 'view-overview', t('Keyboard shortcut: "%s"', 'v o')) ?>
-    </li>
-
     <?= $this->hook->render('template:project-header:view-switcher-before-board-view', array('project' => $project, 'filters' => $filters)) ?>
 
     <li <?= $this->app->checkMenuSelection('BoardViewController') ?>>

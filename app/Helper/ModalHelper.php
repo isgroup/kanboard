@@ -43,7 +43,7 @@ class ModalHelper extends Base
 
     public function large($icon, $label, $controller, $action, array $params = array())
     {
-        $html = '<i class="fa fa-'.$icon.' fa-fw js-modal-large" aria-hidden="true"></i>'.$label;
+        $html = $icon !== '' ? '<i class="fa fa-'.$icon.' fa-fw js-modal-large" aria-hidden="true"></i>'.$label : $label;
         return $this->helper->url->link($html, $controller, $action, $params, false, 'js-modal-large');
     }
 
